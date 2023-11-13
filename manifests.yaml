@@ -1,4 +1,20 @@
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: maint-page-up
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  template:
+    spec:
+      containers:
+        - name: page-up
+          image: alpine:latest
+          command: ["sleep", "2"]
+      restartPolicy: Never
+  backoffLimit: 0
+---
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
@@ -18,14 +34,13 @@ spec:
       containers:
         - name: main
           image: nginx:latest
-          command: ['sh', '-c', 'sleep 30 && tail']
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   selector:
     tier: backend
